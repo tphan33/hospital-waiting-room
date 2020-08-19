@@ -1,0 +1,140 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.Scanner;
+
+public class Assigment {
+
+	public static void main(String[] args) {
+		String[] rooms = new String[] { "", "", "" };
+
+		Queue<Patient> queue1 = new LinkedList<Patient>();
+		Queue<Patient> queue2 = new LinkedList<Patient>();
+		Queue<Patient> queue3 = new LinkedList<Patient>();
+		Queue<Patient> queue4 = new LinkedList<Patient>();
+		Queue<Patient> queue5 = new LinkedList<Patient>();
+		Queue<Patient> queue6 = new LinkedList<Patient>();
+		Queue<Patient> queue7 = new LinkedList<Patient>();
+		Queue<Patient> queue8 = new LinkedList<Patient>();
+		Queue<Patient> queue9 = new LinkedList<Patient>();
+		Queue<Patient> queue10 = new LinkedList<Patient>();
+		List<Queue<Patient>> list = new ArrayList<Queue<Patient>>(
+				Arrays.asList(queue1, queue2, queue3, queue4, queue5, queue6, queue7, queue8, queue9, queue10));
+		Scanner input = new Scanner(System.in);
+
+		instruction();
+
+		Scanner input2 = new Scanner(input.nextLine());
+		String command = input2.next();
+
+		do {
+
+//			if (!(command.equals("in") || command.equals("quit"))) {
+//				System.out.println("You haven't entered your command");
+//				return;
+//			}
+
+			// if (command.equals("quit")) {
+			// System.out.println("bye bye");
+			// return;
+			// }
+
+			if (command.equals("in")) {
+				checkIn(rooms, list, input2);
+			}
+
+			displayStatus(rooms, list);
+
+			instruction();
+
+			input2 = new Scanner(input.nextLine());
+			command = input2.next();
+
+			if (command.equals("out")) {
+				checkOut(rooms, list, input2);
+				
+			}
+			//displayStatus(rooms, list);
+			
+
+		} while (!command.equals("quit"));
+
+		input.close();
+		System.out.println("bye bye");
+	}
+
+	private static void checkOut(String[] rooms, List<Queue<Patient>> list, Scanner input2) {
+		Patient inputPt = new Patient();
+		inputPt.setName(input2.next());
+		String name = inputPt.getName();
+
+		for (int j = 0; j < rooms.length; j++) {
+			if (rooms[j].equals(name)) {
+				// System.out.println(rooms[j] + " has checked out!");
+
+				for (Queue<Patient> waiting : list) {
+					for (Patient patient : waiting) {
+						if (patient.getName() != null) {
+							waiting.poll();
+							rooms[j] = patient.getName();
+							displayStatus(rooms, list);
+							return;
+						}
+
+					}
+
+				}
+
+			}
+		}
+		System.out.println("Sorry, this patient is not in this room, please enter another name!");
+		System.out.println();
+
+	}
+
+	private static void displayStatus(String[] rooms, List<Queue<Patient>> list) {
+		for (int i = 0; i < rooms.length; i++) {
+			int roomNumber = i + 1;
+			System.out.println("Room " + roomNumber + " has: " + rooms[i]);
+		}
+		System.out.println("Waiting list: ");
+		for (Queue<Patient> patientQueue : list) {
+			for (Patient patient : patientQueue) {
+				System.out.println(patient);
+			}
+		}
+		System.out.println();
+	}
+
+	private static void instruction() {
+		System.out.println("Type the command 'quit'");
+		System.out.println("or the command 'in' with patient name and priority number");
+		System.out.println("or 'out' with patient name");
+		System.out.println();
+	}
+
+	private static void checkIn(String[] rooms, List<Queue<Patient>> list, Scanner input2) {
+		Patient inputPatient = new Patient();
+		inputPatient.setName(input2.next());
+		inputPatient.setPriority(input2.nextInt());
+
+		boolean hasRoom = false;
+		for (int i = 0; i < rooms.length; i++) {
+			String room = rooms[i];
+			if (room.isEmpty()) {
+				rooms[i] = inputPatient.getName();
+				hasRoom = true;
+				break;
+			}
+		}
+
+		if (!hasRoom) {
+			Queue<Patient> queue = list.get(inputPatient.getPriority() - 1);
+			queue.add(inputPatient);
+		}
+
+	}
+
+}
